@@ -1,5 +1,6 @@
-# hill climbing algorithm for non-linear ZIHPBN
-hc_nonlinear_ZIHP = function(dat, starting.dag, nbasis = 5, maxiter = 500, tol = .Machine$double.eps^0.25, optim.control = list(), verbose = FALSE)
+# implementation of nonlinear ZiG-DAG
+# hill climbing for nonlinear ZIHPBN
+hc_nonlinear_ZIHP = function(dat, start, nbasis = 4, maxiter = 500, tol = .Machine$double.eps^0.25, optim.control = list(), verbose = FALSE)
 {
    n = nrow(dat) 
    p = ncol(dat)
@@ -7,12 +8,16 @@ hc_nonlinear_ZIHP = function(dat, starting.dag, nbasis = 5, maxiter = 500, tol =
    control = list(fnscale = -1, maxit = 10000, reltol = 1.0e-8)
    control[names(optim.control)] = optim.control
    
+   if (is.null(start))
+   {
+      start = matrix(0, p, p)
+   }
+   
    # generate the B-spline basis matrix
    B = array(0, dim = c(n, p, nbasis))
    for (j in 1 : p)
    {
       B[ , j, ] = splines::bs(dat[ , j], df = nbasis)
-      
    }
    
    # fit the non-linear ZIHPBN given the starting DAG
@@ -228,5 +233,6 @@ hc_nonlinear_ZIHP = function(dat, starting.dag, nbasis = 5, maxiter = 500, tol =
    out$est  = est_curr
    out$bic  = sum(bic_curr)
    out$iter = iter
+   clas(out) = "nonlinear.zigdag"
    return(out)
 }
