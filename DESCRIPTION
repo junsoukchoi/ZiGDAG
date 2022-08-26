@@ -1,11 +1,12 @@
 Package: ZiGDAG
 Type: Package
-Title: What the package does (short line)
+Title: Model-based causal discovery for zero-inflated count data
 Version: 1.0
 Date: 2022-08-26
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Junsouk Choi and Yang Ni
+Maintainer: Junsouk Choi <jchoi@stat.tamu.edu>
+Description: Implementation of zero-inflated generalized hypergeometric directed acyclic graphs (ZiG-DAGs) for inference of causal structure from observational zero-inflated count data. For the structure learning of ZiG-DAGs, score-based greedy search algorithms are implemented.
+moderate-to-large graphs
+License: GPL (>=2)
 Imports: Rcpp (>= 1.0.7), igraph, splines
 LinkingTo: Rcpp, RcppArmadillo
