@@ -1,0 +1,5 @@
+useDynLib(ZiGDAG, .registration=TRUE)
+import(igraph)
+import(splines)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
