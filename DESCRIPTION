@@ -6,7 +6,8 @@ Date: 2022-08-26
 Author: Junsouk Choi and Yang Ni
 Maintainer: Junsouk Choi <jchoi@stat.tamu.edu>
 Description: Implementation of zero-inflated generalized hypergeometric directed acyclic graphs (ZiG-DAGs) for inference of causal structure from observational zero-inflated count data. For the structure learning of ZiG-DAGs, score-based greedy search algorithms are implemented.
-moderate-to-large graphs
 License: GPL (>=2)
+Encoding: UTF-8
 Imports: Rcpp (>= 1.0.7), igraph, splines
 LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 7.2.1

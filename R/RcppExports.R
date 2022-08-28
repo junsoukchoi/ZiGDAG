@@ -2,18 +2,18 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 dZIHP_cpp <- function(param, y, X, lower, upper) {
-    .Call(`_ZiGDAG_dZIHP_cpp`, param, y, X, lower, upper)
+    .Call('_ZiGDAG_dZIHP_cpp', PACKAGE = 'ZiGDAG', param, y, X, lower, upper)
 }
 
 gradZIHP_cpp <- function(param, y, X) {
-    .Call(`_ZiGDAG_gradZIHP_cpp`, param, y, X)
+    .Call('_ZiGDAG_gradZIHP_cpp', PACKAGE = 'ZiGDAG', param, y, X)
 }
 
 dZINB_cpp <- function(param, y, X, lower, upper) {
-    .Call(`_ZiGDAG_dZINB_cpp`, param, y, X, lower, upper)
+    .Call('_ZiGDAG_dZINB_cpp', PACKAGE = 'ZiGDAG', param, y, X, lower, upper)
 }
 
 gradZINB_cpp <- function(param, y, X) {
-    .Call(`_ZiGDAG_gradZINB_cpp`, param, y, X)
+    .Call('_ZiGDAG_gradZINB_cpp', PACKAGE = 'ZiGDAG', param, y, X)
 }
 
