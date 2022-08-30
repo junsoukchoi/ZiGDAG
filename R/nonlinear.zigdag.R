@@ -1,6 +1,23 @@
-# implementation of nonlinear ZiG-DAG
-# hill climbing for nonlinear ZIHPBN
-hc_nonlinear_ZIHP = function(dat, start, nbasis = 4, maxiter = 500, tol = .Machine$double.eps^0.25, optim.control = list(), verbose = FALSE)
+#' Learning the causal structure of a nonlinear ZiG-DAG
+#' 
+#' \code{nonlinear.zidag} learns the causal structure of a nonlinear ZiG-DAG using a hill-climbing greedy search algorithm. Specifically, the conditional distribution of each node in the model is assumed to be a zero-inflated hyper-Poisson distribution. 
+#'
+#' @param dat a data matrix.
+#' @param start a square adjacency matrix, the directed acyclic graph to be used to initialize the algorithm. If none is specified, the empty graph is used. 
+#' @param nbasis an integer, the number of cubic B-spline basis functions to be used for the nonlinear ZiG-DAG. 
+#' @param maxiter an integer, the maximum number of iterations.
+#' @param tol a numeric value, the tolerance for the convergence of the network score (BIC).
+#' @param optim.control a list of control parameters passed to \code{optim}.
+#' @param verbose a boolean value. If \code{TRUE}, progress of the algorithm is printed; otherwise the function is completely silent. 
+#'
+#' @return An object of class \code{nonlinear.zidag}, a list containing the following components:\itemize{
+#' \item\code{est}: a list of model parameter estimates for the nonlinear ZiG-DAG, of which the component "\code{E}" gives the adjacency matrix of the estimated DAG for the nonlinear ZiG-DAG.\cr
+#' \item\code{bic}: the Bayesian Information Criterion for the estimated nonlinear ZiG-DAG model.
+#' \item\code{iter}: the number of iterations of the hill-climbing greedy search algorithm used. 
+#' @export
+#'
+#' @examples
+nonlinear.zidag = function(dat, start, nbasis = 4, maxiter = 500, tol = .Machine$double.eps^0.25, optim.control = list(), verbose = FALSE)
 {
    n = nrow(dat) 
    p = ncol(dat)
