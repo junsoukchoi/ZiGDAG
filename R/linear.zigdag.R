@@ -1,4 +1,27 @@
-# implementation of linear ZiG-DAG
+#' Learning the causal structure of a linear ZiG-DAG
+#' 
+#' \code{linear.zidag} learns the causal structure of a linear ZiG-DAG using a score-based greedy search algorithm.
+#'
+#' @param dat a data matrix.
+#' @param start a square adjacency matrix, the directed acyclic graph to be used to initialize the algorithm. If none is specified, the empty graph is used. 
+#' @param ghpd a character string, the generalized hypergeometric probability distribution to be used for the linear ZiG-DAG. Possible values are "\code{hyper.poisson}" for the hyper-Poisson distribution and "\code{negative.binomial}" for the negative binomial distribution. If none is specified, the default is "\code{hyper.poisson}".
+#' @param method a character string, the greedy search method to be used. Possible values are "\code{hc}" for the hill-climbing and "\code{tabu}" for the tabu search. If none is specified, the default is "\code{hc}". Now, the method "\code{tabu}" is not available for the ghpd "\code{negative.binomial}".
+#' @param tabu a positive integer number, the length of the tabu list for the "\code{tabu}" search. 
+#' @param max.tabu a positive integer number, the iterations that the "\code{tabu}" search can perform without improving the best network score (BIC). 
+#' @param maxiter an integer, the maximum number of iterations.
+#' @param tol a numeric value, the tolerance for the convergence of the network score (BIC).
+#' @param optim.control a list of control parameters passed to \code{optim}.
+#' @param verbose a boolean value. If \code{TRUE}, progress of the algorithm is printed; otherwise the function is completely silent. 
+#'
+#' @return An object of class \code{linear.zidag}, a list containing the following components:\itemize{
+#' \item\code{est}: a list of model parameter estimates for the linear ZiG-DAG, of which the component "\code{E}" gives the adjacency matrix of the estimated DAG for the linear ZiG-DAG.\cr
+#' \item\code{bic}: the Bayesian Information Criterion for the estimated linear ZiG-DAG model.
+#' \item\code{iter}: the number of iterations of the score-based greedy search algorithm used. 
+#' }
+#' 
+#' @export
+#'
+#' @examples
 linear.zigdag = function(dat, start = NULL, ghpd = "hyper.poisson", method = "hc", tabu = 10, max.tabu = tabu, maxiter = 500, tol = .Machine$double.eps^0.25, optim.control = list(), verbose = FALSE)
 {
    if (is.null(start))
@@ -11,7 +34,7 @@ linear.zigdag = function(dat, start = NULL, ghpd = "hyper.poisson", method = "hc
       if (method == "hc")
       {
          out = hc_linear_ZIHP(dat = dat, starting.dag = start, maxiter = maxiter, tol = tol, optim.control = optim.control, verbose = verbose)
-      } else if (method = "tabu")
+      } else if (method == "tabu")
       {
          out = ts_linear_ZIHP(dat = dat, starting.dag = start, tabu = tabu, max.tabu = max.tabu, maxiter = maxiter, tol = tol, optim.control = optim.control, verbose = verbose)
       }
