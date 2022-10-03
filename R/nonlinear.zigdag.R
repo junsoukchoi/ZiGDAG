@@ -14,9 +14,76 @@
 #' \item\code{est}: a list of model parameter estimates for the nonlinear ZiG-DAG, of which the component "\code{E}" gives the adjacency matrix of the estimated DAG for the nonlinear ZiG-DAG.\cr
 #' \item\code{bic}: the Bayesian Information Criterion for the estimated nonlinear ZiG-DAG model.
 #' \item\code{iter}: the number of iterations of the hill-climbing greedy search algorithm used. 
+#' }
+#' 
 #' @export
 #'
 #' @examples
+#' library(ZiGDAG)
+#' library(igraph)
+#' library(DGLMExtPois)
+#' # set a random seed
+#' set.seed(1)
+#' 
+#' # generate synthetic data from a nonlinear ZiG-DAG, where zero-inflated hyper-Poisson distributions are assumed for each node
+#' # generate the DAG with 5 nodes: 1 -> 2 -> 3 -> 4 -> 5
+#' p = 5   # number of variables
+#' E_true = matrix(0, p, p)
+#' for (j in 2 : p) E_true[j, j - 1] = 1
+#' 
+#' # generate nonlinear functions and parameters for the nonlinear ZiG-DAG 
+#' f_nonlinear = function(z, type)
+#' {
+#'    if (type == 1) return(0.5 * z * (z - 3))
+#'    if (type == 2) return(sin(z))
+#' }
+#' 
+#' g_nonlinear = function(z, type)
+#' {
+#'    if (type == 1) return(-0.5 * (z - 1.5)^2)
+#'    if (type == 2) return(cos(z))
+#' }
+#' 
+#' f_true = matrix(0, p, p)
+#' f_true[E_true == 1] = sample(1 : 2, size = sum(E_true), replace = TRUE)
+#' g_true = matrix(0, p, p)
+#' g_true[E_true == 1] = sample(1 : 2, size = sum(E_true), replace = TRUE)
+#' delta_true  = runif(p, -1.5, -1)
+#' gamma_true  = runif(p, 1, 1.5)
+#' lambda_true = exp(runif(p, -2, 2))
+#' 
+#' # generate synthetic data from the specified nonlinear ZiG-DAG with sample size n = 500 
+#' n   = 500  # sample size
+#' dat = matrix(0, n, p)
+#' order_nodes = as_ids(topo_sort(graph_from_adjacency_matrix(t(E_true))))
+#' for (j in order_nodes)
+#' {
+#'    p_j  = sum(E_true[j, ] == 1)
+#'    pi_true = rep(delta_true[j], n)
+#'    mu_true = rep(gamma_true[j], n)
+#'    if (p_j > 0)
+#'    {
+#'       pa_j = which(E_true[j, ] == 1)
+#'       for (a in 1 : p_j)
+#'       {
+#'          k = pa_j[a] 
+#'          pi_true = pi_true + f_nonlinear(dat[ , k], type = f_true[j, k])
+#'          mu_true = mu_true + g_nonlinear(dat[ , k], type = g_true[j, k])
+#'       }
+#'    }
+#'    
+#'    pi_true = exp(pi_true) / (1 + exp(pi_true))
+#'    pi_true[is.nan(pi_true)] = 1
+#'    mu_true = exp(mu_true)
+#'    dat[ , j] = (1 - rbinom(n, 1, pi_true)) * rhP(n, lambda_true[j], mu_true)
+#' }
+#' 
+#' # learn the causal structure of nonlinear ZiG-DAG from synthetic data 
+#' # apply the hill-climbing algorithm for nonlinear ZiG-DAG to synthetic data
+#' # 4 cubic B-spline functions are used to approximate nonlinear functions in nonlinear ZiG-DAG models.
+#' fit = nonlinear.zigdag(dat, nbasis = 4)   
+#' # adjacency matrix of the estimated causal DAG
+#' E_est = fit$est$E
 nonlinear.zigdag = function(dat, start = NULL, nbasis = 4, maxiter = 500, tol = .Machine$double.eps^0.25, optim.control = list(), verbose = FALSE)
 {
    n = nrow(dat) 
@@ -250,6 +317,6 @@ nonlinear.zigdag = function(dat, start = NULL, nbasis = 4, maxiter = 500, tol = 
    out$est  = est_curr
    out$bic  = sum(bic_curr)
    out$iter = iter
-   clas(out) = "nonlinear.zigdag"
+   class(out) = "nonlinear.zigdag"
    return(out)
 }
