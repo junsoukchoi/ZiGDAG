@@ -48,3 +48,44 @@ An object of class \code{linear.zidag}, a list containing the following componen
 \description{
 \code{linear.zidag} learns the causal structure of a linear ZiG-DAG using a score-based greedy search algorithm.
 }
+\examples{
+library(ZiGDAG)
+library(igraph)
+library(DGLMExtPois)
+# set a random seed
+set.seed(1)
+
+# generate synthetic data from a linear ZiG-DAG, where zero-inflated hyper-Poisson distributions are assumed for each node
+# generate the DAG with 5 nodes: 1 -> 2 -> 3 -> 4 -> 5
+p = 5   # number of variables
+E_true = matrix(0, p, p)
+for (j in 2 : p) E_true[j, j - 1] = 1
+
+# generate model parameters for the linear ZiG-DAG
+alpha_true  = matrix(0, p, p)
+alpha_true[E_true == 1] = runif(sum(E_true), 0.5, 2)
+beta_true   = matrix(0, p, p)
+beta_true[E_true == 1]  = runif(sum(E_true), -2, -0.5)
+delta_true  = runif(p, -1.5, -1)
+gamma_true  = runif(p, 1, 1.5)
+lambda_true = exp(runif(p, -2, 2))
+
+# generate synthetic data from the specified linear ZiG-DAG with sample size n = 500 
+n   = 500  # sample size
+dat = matrix(0, n, p)
+order_nodes = as_ids(topo_sort(graph_from_adjacency_matrix(t(E_true))))
+for (j in order_nodes)
+{
+   pi_true = as.vector(exp(dat \%*\% alpha_true[j, ] + delta_true[j]))
+   pi_true = pi_true / (1 + pi_true)
+   pi_true[is.nan(pi_true)] = 1
+   mu_true = as.vector(exp(dat \%*\% beta_true[j, ] + gamma_true[j]))
+   dat[ , j] = (1 - rbinom(n, 1, pi_true)) * rhP(n, lambda_true[j], mu_true)
+}
+
+# learn the causal structure of linear ZiG-DAG from synthetic data 
+# apply the hill-climbing algorithm for linear ZiG-DAG to synthetic data
+fit = linear.zigdag(dat, ghpd = "hyper.poisson", method = "hc")
+# adjacency matrix of the estimated causal DAG
+E_est = fit$est$E
+}
