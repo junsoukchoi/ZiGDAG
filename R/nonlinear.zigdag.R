@@ -1,6 +1,6 @@
 #' Learning the causal structure of a nonlinear ZiG-DAG
 #' 
-#' \code{nonlinear.zidag} learns the causal structure of a nonlinear ZiG-DAG using a hill-climbing greedy search algorithm. Specifically, the conditional distribution of each node in the model is assumed to be a zero-inflated hyper-Poisson distribution. 
+#' \code{nonlinear.zigdag} learns the causal structure of a nonlinear ZiG-DAG using a hill-climbing greedy search algorithm. Specifically, the conditional distribution of each node in the model is assumed to be a zero-inflated hyper-Poisson distribution. 
 #'
 #' @param dat a data matrix.
 #' @param start a square adjacency matrix, the directed acyclic graph to be used to initialize the algorithm. If none is specified, the empty graph is used. 
@@ -17,7 +17,7 @@
 #' @export
 #'
 #' @examples
-nonlinear.zidag = function(dat, start, nbasis = 4, maxiter = 500, tol = .Machine$double.eps^0.25, optim.control = list(), verbose = FALSE)
+nonlinear.zigdag = function(dat, start = NULL, nbasis = 4, maxiter = 500, tol = .Machine$double.eps^0.25, optim.control = list(), verbose = FALSE)
 {
    n = nrow(dat) 
    p = ncol(dat)
@@ -40,7 +40,7 @@ nonlinear.zidag = function(dat, start, nbasis = 4, maxiter = 500, tol = .Machine
    # fit the non-linear ZIHPBN given the starting DAG
    bic_curr = rep(NA, p)
    est_curr = list()
-   est_curr$E      = starting.dag
+   est_curr$E      = start
    est_curr$phi    = array(0, dim = c(p, p, nbasis))
    est_curr$psi    = array(0, dim = c(p, p, nbasis))
    est_curr$delta  = rep(0, p)
